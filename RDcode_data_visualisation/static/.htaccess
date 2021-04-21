@@ -1,0 +1,6 @@
+# BEGIN Expire headers
+<IfModule mod_expires.c>
+ ExpiresActive On
+ ExpiresDefault "modification plus 0 seconds"
+</IfModule>
+# END Expire headers

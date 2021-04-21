@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<head>
+    <title>RDcode data viewer</title>
+    <meta charset="UTF-8"/>
+    <link href="./css/tabulator_bootstrap4.css" rel="stylesheet"/>
+    <link href="./css/main.css" rel="stylesheet"/>
+    <link href="./css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="icon" href="./media/favicon.ico"/>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9F5YN76HD5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-9F5YN76HD5');
+    </script>
+</head>
+<body>
+    <div id="image_head">
+        <a href="https://www.orpha.net/consor/cgi-bin/index.php">
+          <img align=left src="./media/logo_orphanet_transp.png" alt="orphanet" height="43px"></a>
+        <div class="flexCenter flexCol" style="text-align:center;">
+            <i class="noWrap">Tooling example based on API implementation <a href="http://api.orphacode.org/">
+              http://api.orphacode.org/</a></i>
+            <i class="noWrap">Tested with Firefox, Chrome and Edge browser</i>
+            <a id="date" href="http://www.orphadata.org/cgi-bin/ORPHAnomenclature.html">ORPHA Nomenclature Pack (JULY 2020)</a>
+        </div>
+        <a href="http://www.rd-code.eu/">
+          <img src="./media/rd_code.png" alt="rd_code" height="60px">
+        </a>
+    </div>
+
+    <div id="headerMenu" class="flexStart">
+        <div class="flexCenter flexCol">
+            <div class="flexStart">
+                <div class="mainInputMenu">
+                    <label for="mainInputLang" class=font-weight-bold>Select a language:</label><br>
+                    <select id="mainInputLang" name="mainInputLang"
+                            onchange="suggest(mainInputLang.value, mainInputType.value, mainInput.value); purgeloadedMap(mainInputLang.value)">
+                        <option value="CS">CS</option>
+                        <option value="DE">DE</option>
+                        <option value="EN" selected>EN</option>
+                        <option value="ES">ES</option>
+                        <option value="FR">FR</option>
+                        <option value="IT">IT</option>
+                        <option value="NL">NL</option>
+                        <option value="PL">PL</option>
+                        <option value="PT">PT</option>
+                    </select>
+                </div>
+                <div class="mainInputMenu">
+                    <label class=font-weight-bold for="mainInputType">Select the type of the query:</label><br>
+                    <select id="mainInputType" name="mainInputType"
+                            onchange="suggest(mainInputLang.value, mainInputType.value, mainInput.value)">
+                        <option value="auto" selected>Auto</option>
+                        <option value="PT">Preferred Term</option>
+                        <option value="S">Synonym</option>
+                        <option value="PTS">Preferred Term or Synonym</option>
+                        <option value="ORPHA">ORPHAcode</option>
+                        <option value="ICD-10">ICD-10 code</option>
+                        <option value="OMIM">OMIM number</option>
+                    </select>
+                </div>
+            </div>
+            <div id="mainInputMenuSearch">
+                <label for="mainInput" class=font-weight-bold>Search by ORPHAcode, disorder name, ICD-10 or OMIM code:</label><br>
+                <div>
+                    <a id="suggestResultNumber"></a>
+                </div>
+            <!--    onKeyUp event is registered in suggest.js-->
+                <div class="flexStart">
+                    <input class="form-control input-lg" type="text" id="mainInput" value="558">
+                    <button type="button" class="btn btn-primary btn-sm" onClick="initiateSuggest(0)">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="suggestDiv" class="flexCenter flexCol">
+        <div>
+            <label class="noWrap font-weight-bold">Select a result to obtain hierarchical information below</label>
+            <!-- suggest-download-csv event is registered in tabulatorInstanceSuggest.js -->
+            <button id="suggest-download-csv" type="button" class="btn btn-primary btn-sm" style="margin:10px;">
+                Download CSV
+            </button>
+        </div>
+        <!-- Show a list of results for each disorder matching the query -->
+        <div id="suggestDisplay"></div>
+    </div>
+
+    <!-- Classification graph -->
+    <div id="classificationDiv" class="flexCenter flexCol">
+        <div class="spaceBetween" style="align-items:center; margin-top:10px;">
+            <b><i>Use "right-click" to obtain more options</i></b>
+            <!-- classificationSpoiler event is registered in classificationGraph.js and d3v4ForceGraph.js -->
+            <button id="classificationSpoiler" type="button" class="btn btn-primary btn-sm">
+              Toggle classification panel
+            </button>
+        </div>
+        <div id="classificationInfo" class="flexStart">
+            <svg />
+            <div id="classificationSelect"></div>
+        </div>
+    </div>
+
+    <!-- Disorder data sheet -->
+    <div id="disorderInfo">
+        <!-- ORPHA Pref_Term Link Export -->
+        <div id="DI_Title_Block" class="flexCenter roundedCorner" style="align-items:baseline; margin:1rem; background-color:#F0F0F0;">
+            <h3 id="DI_ORPHAcode_div" style="margin:10px;">
+                <a id="DI_ORPHAcode" data-toggle="tooltip" data-placement="top" title="">ORPHA:</a>
+            </h3>
+            <h3 id="DI_Name_Text_div" style="margin:10px;">
+                <a id="DI_Name_Text" data-toggle="tooltip" data-placement="top" title=""></a>
+            </h3>
+            <div class="flexCenter">
+                <a id="DI_URL_div" target="_blank" rel="noopener noreferrer" href="" class="flexCenter" style="margin:10px;">
+                    <img id="DI_URL_Text" src="./media/external_link.png" alt="link" height="24px"
+                         data-toggle="tooltip" data-placement="top" title="">
+                </a>
+                <button type="button" class="flexCenter btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top"
+                        title="Export this summary in a tab separated format" onClick="exportDataSheet()"
+                        style="margin:10px;">Export
+                </button>
+            </div>
+        </div>
+        <!--  -->
+        <div class="flexStart">
+            <!-- Synonym Definition -->
+            <div class="flexAround flexCol roundedCorner" style="width:50%; margin:1rem; background-color:#F0F0F0;">
+                <div id="DI_Syn">
+                    <h5>
+                        <a id="DI_Syn_Tooltip" data-toggle="tooltip" data-placement="top" title="">Synonym(s):</a>
+                    </h5>
+                    <div id="DI_Syn_Text"></div>
+                </div>
+                <div id="DI_Def">
+                    <h5 style=>
+                        <a id="DI_Def_Tooltip" data-toggle="tooltip" data-placement="top" title="">Definition:</a>
+                    </h5>
+                    <p id="DI_Def_Text"></p>
+                </div>
+            </div>
+            <div class="spaceBetween" style="width:50%; margin:1rem;">
+                <!-- Classification Level, Status, Typology, Target for inactive, ORPHAcode aggregation and name -->
+                <div class="flexCenter flexCol roundedCorner" style="width:100%; background-color:#F0F0F0;">
+                    <div class="spaceBetween">
+                        <div class="flexCenter flexCol" style="width:50%;">
+                            <div id="DI_ClassificationLevel">
+                                <h5>
+                                    <a id="DI_ClassificationLevel_Tooltip" data-toggle="tooltip" data-placement="top" title="">Classification Level:</a>
+                                </h5>
+                                <p id="DI_ClassificationLevel_Text"></p>
+                            </div>
+                            <div id="DI_Status">
+                                <h5>
+                                    <a id="DI_Status_Tooltip" data-toggle="tooltip" data-placement="top" title="">Status:</a>
+                                </h5>
+                                <p id="DI_Status_Text"></p>
+                            </div>
+                        </div>
+                        <div class="flexCenter flexCol" style="width:50%;">
+                            <div id="DI_Typology">
+                                <h5>
+                                    <a id="DI_Typology_Tooltip" data-toggle="tooltip" data-placement="top" title="">Typology:</a>
+                                </h5>
+                                <p id="DI_Typology_Text"></p>
+                            </div>
+                            <div id="DI_InactiveTarget">
+                                <h5>
+                                    <a id="DI_InactiveTarget_Tooltip" data-toggle="tooltip" data-placement="top" title="">Target for inactive ORPHAcode:</a>
+                                </h5>
+                                <p id="DI_InactiveTarget_Text"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DI_Aggreg">
+                        <h5>
+                            <a id="DI_Aggreg_Tooltip" data-toggle="tooltip" data-placement="top" title="">ORPHAcode aggregation and name:</a>
+                        </h5>
+                        <p id="DI_Aggreg_Text" style="color:red"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ICD-10, OMIM -->
+        <div id="DI_MappedResources" class="flexStart roundedCorner" style="margin:1rem; background-color:#F0F0F0;">
+            <div class="flexStart flexCol" style="width:100%;">
+                <h5>Related concepts in other terminologie(s):</h5>
+                <div class="flexStart" style="width:100%;">
+                    <div id="DI_ICD10" style="width:50%;">
+                        <h5>
+                            <a id="DI_ICD10_Tooltip" data-toggle="tooltip" data-placement="top" title="">ICD-10 code(s):</a>
+                        </h5>
+                        <p id="DI_ICD10_Text"></p>
+                    </div>
+                    <div id="DI_OMIM" style="width:50%; margin-left:1rem;">
+                        <h5>
+                            <a id="DI_OMIM_Tooltip" data-toggle="tooltip" data-placement="top" title="">OMIM number(s):</a>
+                        </h5>
+                        <p id="DI_OMIM_Text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Classification -->
+        <div id="DI_Classification" class="flexStart roundedCorner" style="margin:1rem; background-color:#F0F0F0;">
+            <div id="DI_HchId" style="width:34%; margin-right:1rem;">
+                <h5>
+                    <a data-toggle="tooltip" data-placement="top" title="">Classification(s):</a>
+                </h5>
+                <p id="DI_HchId_Text"></p>
+            </div>
+            <div id="DI_Parent" style="width:33%; margin-right:1rem;">
+                <h5>
+                    <a data-toggle="tooltip" data-placement="top" title="">Parent(s):</a>
+                </h5>
+                <p id="DI_Parent_Text"></p>
+            </div>
+            <div id="DI_Child" style="width:33%;">
+                <h5>
+                    <a data-toggle="tooltip" data-placement="top" title="">Children:</a>
+                </h5>
+                <p id="DI_Child_Text"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core scripts -->
+    <script src="./lib/mainConfig.js" type="text/javascript"></script>
+    <script src="./lib/external/jquery.min.js" type="text/javascript"></script>
+    <script src="./lib/external/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="./lib/external/tabulator.min.js" type="text/javascript"></script>
+    <script src="./lib/queryApi.js" type="text/javascript"></script>
+    <script src="./lib/suggest.js" type="text/javascript"></script>
+    <script src="./lib/tabulatorInstanceSuggest.js" type="text/javascript"></script>
+    <script src="./lib/external/lodash.js" type="text/javascript"></script>
+    <script src="./lib/rdcodeDataVizMain.js" type="text/javascript"></script>
+
+    <!-- Classification part -->
+    <link rel='stylesheet' href='./css/d3-context-menu.css'>
+    <link rel='stylesheet' href='./css/classificationGraph.css'>
+
+    <script src="./lib/external/d3.v4.js" type="text/javascript"></script>
+    <script src="./lib/external/d3v4-brush-lite.js" type="text/javascript"></script>
+    <script src="./lib/external/d3-context-menu.js" type="text/javascript"></script>
+    <script src="./lib/classification/d3v4ForceGraph.js" type="text/javascript"></script>
+    <script src="./lib/classification/tabulatorInstanceClassif.js" type="text/javascript"></script>
+    <script src="./lib/classification/classificationGraph.js" type="text/javascript"></script>
+
+    <!-- Disorder Info part -->
+    <link rel='stylesheet' href='./css/disorderInfo.css'>
+
+    <script src="./lib/disorderInfo.js" type="text/javascript"></script>
+
+</body>
