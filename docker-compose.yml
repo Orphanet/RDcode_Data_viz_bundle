@@ -61,8 +61,11 @@ services:
     container_name: api_rdcode
     ports:
       - "8080:8080"
-#  RDcode_data_visualisation:
-
+  RDcode_data_visualisation:
+    image: docker.io/library/rdcode_dataviz:latest
+    container_name: rdcode_dataviz
+    ports:
+      - "90:90"
 
 volumes:
   data01:

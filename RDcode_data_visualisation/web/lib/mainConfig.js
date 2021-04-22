@@ -1,5 +1,7 @@
 //const baseUrl = "https://api.orphacode.org/"; // RDcode API url
-const baseUrl = "http://localhost:8080/"; // RDcode API url
+const baseUrl = "http://localhost:8080/"; // Local RDcode API url
+//const baseUrl = "host.docker.internal:8080/"; // Docker internal RDcode API url
+
 const suggestDelay = 500; // time in ms needed to autolaunch the suggest search
 const paginationSize = 5; // number of lines displayed for the search
 var tooltip = {};
