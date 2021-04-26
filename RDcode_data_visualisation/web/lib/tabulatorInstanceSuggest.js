@@ -1,14 +1,12 @@
-const tooltipICD =
-"None : No mapping registered in the Orphanet database for this entity, this entity might exist in this source\n" +
-"E : Exact mapping: the two concepts are equivalent\n" +
-"NTBT : ORPHA code's Narrower Term maps to a Broader Term\n" +
-"BTNT : ORPHA code's Broader Term maps to a Narrower Term\n" +
-"NTBT/E : ORPHA code's Narrower Term maps to a Broader Term because of an Exact mapping with a synonym in the target terminology\n" +
-"BTNT/E : ORPHA code's Broader Term maps to a Narrower Term because of an Exact mapping with a synonym in the target terminology\n" +
-"ND : not yet decided/unable to decide";
-const tooltipOMIM = tooltipICD;
-const tooltipSynonym = "The synonyms are separated by a double pipe \" || \"." +
-  " You can adjust the size of this column to display the synonyms on a newline";
+//const tooltipICD =
+//"None : No mapping registered in the Orphanet database for this entity, this entity might exist in this source\n" +
+//"E : Exact mapping: the two concepts are equivalent\n" +
+//"NTBT : ORPHA code's Narrower Term maps to a Broader Term\n" +
+//"BTNT : ORPHA code's Broader Term maps to a Narrower Term\n" +
+//"NTBT/E : ORPHA code's Narrower Term maps to a Broader Term because of an Exact mapping with a synonym in the target terminology\n" +
+//"BTNT/E : ORPHA code's Broader Term maps to a Narrower Term because of an Exact mapping with a synonym in the target terminology\n" +
+//"ND : not yet decided/unable to decide";
+//const tooltipOMIM = tooltipICD;
 
 var table = new Tabulator("#suggestDisplay", {
     data:[],         //load row data from array
@@ -20,7 +18,7 @@ var table = new Tabulator("#suggestDisplay", {
     pagination:"local",       //'local': load all the data set provided then paginate the data
     paginationSize:paginationSize, //number of rows per page of data (mainConfig.js)
     movableColumns:true,      //allow column order to be changed
-    resizableColumns:"header",//resize from header only
+    resizableColumns:"header",//header to resize from header only or true for full control
     resizableRows:false,      //row height
     selectable:1,             //maximum 1 selectable row
     headerSort:false,
@@ -37,11 +35,13 @@ var table = new Tabulator("#suggestDisplay", {
 //          console.log(data.slice(firstElem, lastElem));
           lazyLoadSuggest(data, firstElem, lastElem); // see suggest.js
         }
+        table.redraw(true); //trigger full rerender including all data and rows
     },
     downloadReady:function(fileContents, blob) {
     //fileContents - the unencoded contents of the file
     //blob - the blob object for the download
 //    console.log(fileContents);
+    fileContents = fileContents.replaceAll("<ul>", "").replaceAll("</ul>", "").replaceAll("<li>", "").replaceAll("</li>", " || ");
 //    var blob = new Blob(["\uFEFF", fileContents], {
     var blob = new Blob([decodeURIComponent('%ef%bb%bf'), fileContents], {
 //    var blob = new Blob([fileContents], {
@@ -55,12 +55,12 @@ var table = new Tabulator("#suggestDisplay", {
 //Statuts (Inactive, active), Aggregation code (highlighted)
     columns:[                 //define the table columns
         {title:"Label", field:"Preferred term"},
-        {title:"Synonym", field:"Synonym", formatter:"textarea", minWidth:180, headerTooltip:tooltipSynonym},
+        {title:"Synonym", field:"Synonym", formatter:"html"},
         {title:"ORPHAcode", field:"ORPHAcode"},
-        {title:"Classification level", field:"Classification level", minWidth:181},
-        {title:"ICD-10", field:"Code ICD10", formatter:"textarea", width:110, headerTooltip:tooltipICD},
-        {title:"OMIM", field:"Code OMIM", formatter:"textarea", width:120, headerTooltip:tooltipOMIM},
-        {title:"Status", field:"Status", minWidth:158},
+        {title:"Classification level", field:"Classification level"},
+        {title:"ICD-10", field:"Code ICD10", formatter:"textarea"},
+        {title:"OMIM", field:"Code OMIM", formatter:"textarea"},
+        {title:"Status", field:"Status"},
         {title:"Aggregation code", field:"ORPHAcodeAggregation", cssClass:"ORPHAcodeAggregation"},
     ],
 });

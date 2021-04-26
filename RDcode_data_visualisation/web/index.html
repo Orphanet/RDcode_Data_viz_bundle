@@ -65,19 +65,28 @@
             </div>
             <div id="mainInputMenuSearch">
                 <label for="mainInput" class=font-weight-bold>Search by ORPHAcode, disorder name, ICD-10 or OMIM code:</label><br>
-                <div>
-                    <a id="suggestResultNumber"></a>
-                </div>
             <!--    onKeyUp event is registered in suggest.js-->
                 <div class="flexStart">
                     <input class="form-control input-lg" type="text" id="mainInput" value="">
                     <button type="button" class="btn btn-primary btn-sm" onClick="initiateSuggest(0)">Search</button>
+                </div>
+                <div>
+                    <a id="suggestResultNumber"></a>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="suggestDiv" class="flexCenter flexCol">
+        <div>
+            <label>Results per page</label>
+            <select id="paginationSize" name="paginationSize"
+                onchange="changePaginationSize(this.value);">
+                <option value="5" selected>5</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+            </select>
+        </div>
         <div>
             <label class="noWrap font-weight-bold">Select a result to obtain hierarchical information below</label>
             <!-- suggest-download-csv event is registered in tabulatorInstanceSuggest.js -->

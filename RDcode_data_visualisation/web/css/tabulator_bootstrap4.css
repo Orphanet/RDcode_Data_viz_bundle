@@ -1346,3 +1346,7 @@ body.tabulator-print-fullscreen-hide > *:not(.tabulator-print-fullscreen) {
 .ORPHAcodeAggregation {
   color: red;
 }
+
+.dl,ol,ul {
+  padding-left: 10px;
+}

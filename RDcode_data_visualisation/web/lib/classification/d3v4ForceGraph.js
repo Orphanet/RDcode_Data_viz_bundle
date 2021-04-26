@@ -413,7 +413,8 @@ function createV4SelectableForceDirectedGraph(svg, graph, nodeMap, linkSet, load
     .on("mouseover", mouseover)
     .on("mouseout", mouseout)
 //  context menu
-    .on("contextmenu", d3.contextMenu(menu))
+    .on("click", d3.contextMenu(menu)) // left click
+    .on("contextmenu", d3.contextMenu(menu)) // right click
 //  node drag
     .call(d3.drag()
         .on("start", dragstarted)
@@ -437,7 +438,9 @@ function createV4SelectableForceDirectedGraph(svg, graph, nodeMap, linkSet, load
       .on("mouseover", mouseover)
       .on("mouseout", mouseout)
 //    context menu
-      .on("contextmenu", d3.contextMenu(menu))
+      .on("click", d3.contextMenu(menu)) // left click
+      .on("contextmenu", d3.contextMenu(menu)) // right click
+
 //    node drag
       .call(d3.drag()
         .on("start", dragstarted)

@@ -170,11 +170,17 @@ function lazyLoadSuggest(data, firstElem, lastElem) {
           table.updateData([{ORPHAcode:row["ORPHAcode"], Synonym:"Loading..."}]);
           synonym = querySynonymByORPHAcode(baseUrl, inputLang, row.ORPHAcode);
           synonym.then((synonym) => {
-  //          console.log(synonym);
+//            console.log(synonym);
             if (!synonym.Synonym) {
               synonym.Synonym = "None";
             } else {
-              synonym.Synonym = synonym.Synonym.join(" || \n");
+//              synonym.Synonym = synonym.Synonym.join(" || \n");
+              var synonymTemp = "<ul>";
+              for (syn of synonym.Synonym) {
+                synonymTemp = synonymTemp + "<li>" + syn + "</li>";
+              }
+              synonymTemp = synonymTemp + "</ul>";
+              synonym.Synonym = synonymTemp;
             }
             table.updateData([{ORPHAcode:synonym.ORPHAcode, Synonym:synonym.Synonym}]);
             suggestReady += 1;

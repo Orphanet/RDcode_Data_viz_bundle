@@ -1,3 +1,10 @@
+function changePaginationSize(value) {
+  paginationSize = value;
+  table.setPageSize(value);
+}
+// reset paginationSize select to default value on refresh
+$("#paginationSize").val(paginationSize);
+
 function visualisationModules(inputLang, row) {
   if (row.ORPHAcode == "") {return};
   // classification force graph
